@@ -31,6 +31,13 @@ app.MapGet("/Patient", (PatientService service) =>
     return Results.Ok(service.GetAll());
 }).WithTags("Patient");
 
+//GET Patient by ID
+app.MapGet("/Patient/{id}", (int id, PatientService services) =>
+{
+    var patient = services.GetById(id);
+    return patient is not null ? Results.Ok(patient) : Results.NotFound();
+}).WithTags("Patient");
+
 //POST Patient
 app.MapPost("/Patient", (PatientService service, Patient patient) =>
 {
@@ -58,6 +65,14 @@ app.MapGet("/Doctor", (DoctorService service) =>
 {
     return Results.Ok(service.GetAll());
 }).WithTags("Doctor");
+
+//GET Doctor by ID
+app.MapGet("/Doctor/{id}", (int id, DoctorService service) =>
+{
+    var doctor = service.GetById(id);
+    return doctor is not null ? Results.Ok(doctor) : Results.NotFound();
+}).WithTags("Doctor");
+
 //POST Doctor
 app.MapPost("/Doctor", (DoctorService service, Doctor doctor) =>
 {

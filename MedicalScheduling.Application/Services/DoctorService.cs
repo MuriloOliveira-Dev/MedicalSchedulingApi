@@ -6,7 +6,7 @@ namespace MedicalScheduling.Application.Services
     {
         private readonly List<Doctor> _doctors = new()
         {
-            new Doctor{Id = 1, Name = "Rogério", Specialty = "Cardiologista"}
+            new Doctor{Id = 1, Name = "Dr. Rogério", Specialty = "Cardiologista"}
         };
         private int nextId = 2;
         public IEnumerable<Doctor> GetAll() => _doctors;
