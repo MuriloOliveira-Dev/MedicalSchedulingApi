@@ -23,7 +23,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MedicalScheduling API V1"));
 }
 
-//GET Pacientess
+//GET Pacientessss
 app.MapGet("/Patient", (PatientService service) =>
 {
     return Results.Ok(service.GetAll());
