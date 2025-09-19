@@ -38,8 +38,8 @@ O sistema segue uma arquitetura em **quatro camadas**, garantindo separação de
   "name": "Dra. Claudia Silva",
   "Specialty": "Cardiologia"
 }
-
-## ⚡ Endpoints disponíveis (Patient)
+````
+- ## ⚡ Endpoints disponíveis (Patient)
 - `GET /Patient` → Lista todos os pacientes
 - `GET /Patient/{id}` → Busca paciente por ID
 - `POST /Patient` → Cria um novo paciente
