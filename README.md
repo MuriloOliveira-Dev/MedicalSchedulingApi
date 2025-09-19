@@ -1,20 +1,45 @@
 # 🩺 Medical Scheduling API
 
-API REST para **agendamento médico**, desenvolvida em **ASP.NET Core 8** aplicando **Clean Architecture** e **Domain-Driven Design (DDD)**.
+API REST para **agendamento médico**, desenvolvida em **ASP.NET Core 8** aplicando **Clean Architecture** e **Domain-Driven Design (DDD)**.  
+Projeto criado para **portfólio**, com endpoints documentados via **Swagger** e organização clara em camadas.
+
+---
 
 ## 🚀 Tecnologias
-- ASP.NET Core 8 (Minimal API)
-- Swagger / OpenAPI
-- Arquitetura em camadas (Api, Application, Domain, Infrastructure)
-- C#
+- ASP.NET Core 8 (Minimal API)  
+- Swagger / OpenAPI  
+- Clean Architecture + DDD  
+- In-memory repository (dados armazenados em listas)  
+- C#  
 
-## 📂 Estrutura do Projeto
-- **Api** → Endpoints REST (Minimal API, Swagger).
-- **Application** → Serviços e lógica de negócio.
-- **Domain** → Entidades centrais (ex.: `Patient`).
-- **Infrastructure** → Persistência (ainda em memória, pode evoluir para banco).
+---
 
-## ⚡ Endpoints disponíveis (Patient)
+## 🏗️ Estrutura do Projeto
+
+O sistema segue uma arquitetura em **quatro camadas**, garantindo separação de responsabilidades e flexibilidade:
+
+- **Api** → Endpoints REST (Minimal API, Swagger)  
+- **Application** → Serviços, DTOs e lógica de negócio desacoplada da infraestrutura  
+- **Domain** → Entidades centrais (`Patient`, `Doctor`) e regras essenciais do negócio  
+- **Infrastructure** → Repositórios em memória (futuro suporte a banco de dados via EF Core)  
+
+---
+
+- ## ⚡ Endpoints disponíveis (Doctor)
+- `GET /Doctor` → Lista todos os médicos
+- `GET /Doctor/{id}` → Busca médico por ID
+- `POST /Doctor` → Cria um novo médico
+- `PUT /Doctor/{id}` → Atualiza dados de um médico
+- `DELETE /Doctor/{id}` → Remove médico
+
+## 📖 Exemplo de JSON (POST /Doutor)
+```json
+{
+  "name": "Dra. Claudia Silva",
+  "Specialty": "Cardiologia"
+}
+````
+- ## ⚡ Endpoints disponíveis (Patient)
 - `GET /Patient` → Lista todos os pacientes
 - `GET /Patient/{id}` → Busca paciente por ID
 - `POST /Patient` → Cria um novo paciente
