@@ -4,6 +4,8 @@ API REST para **agendamento médico**, desenvolvida em **ASP.NET Core 8** aplica
 Projeto criado para **portfólio**, com endpoints documentados via **Swagger** e organização clara em camadas.
 
 ---
+![Work in Progress](https://img.shields.io/badge/status-WIP-yellow)
+---
 
 ## 🚀 Tecnologias
 - ASP.NET Core 8 (Minimal API)  
