@@ -26,11 +26,11 @@ O sistema segue uma arquitetura em **quatro camadas**, garantindo separação de
 ---
 
 - ## ⚡ Endpoints disponíveis (Doctor)
-- `GET /Doctor` → Lista todos os doutores
-- `GET /Doctor/{id}` → Busca doutor por ID
-- `POST /Doctor` → Cria um novo doutor
-- `PUT /Doctor/{id}` → Atualiza dados de um doutor
-- `DELETE /Doctor/{id}` → Remove doutor
+- `GET /Doctor` → Lista todos os médicos
+- `GET /Doctor/{id}` → Busca médico por ID
+- `POST /Doctor` → Cria um novo médico
+- `PUT /Doctor/{id}` → Atualiza dados de um médico
+- `DELETE /Doctor/{id}` → Remove médico
 
 ## 📖 Exemplo de JSON (POST /Doutor)
 ```json
