@@ -1,0 +1,29 @@
+# Build e binários
+bin/
+obj/
+out/
+
+# Usuário e configuração do Visual Studio
+*.user
+*.suo
+*.vsp
+*.vs/
+*.vscode/
+
+# Pacotes NuGet
+*.nupkg
+*.snupkg
+packages/
+
+# Arquivos temporários
+*.log
+*.tmp
+
+# Diretórios do Rider/JetBrains
+.idea/
+
+# Publicação
+publish/
+
+# Arquivos do IIS Express
+*.vspscc
