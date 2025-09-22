@@ -22,7 +22,7 @@ namespace MedicalScheduling.Application.Services
         public async Task<Doctor> Add(Doctor doctor)
         {
             _context.Doctors.Add(doctor);
-            await _context.SaveChangesAsync();
+            int v = await _context.SaveChangesAsync();
             return doctor;
         }
         public async Task<bool> Update(int id, Doctor doctor)

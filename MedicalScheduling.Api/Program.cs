@@ -3,6 +3,7 @@ using MedicalScheduling.Domain.Entities;
 using MedicalScheduling.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using MedicalScheduling.Application.DTO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,82 +21,90 @@ builder.Services.AddScoped<DoctorService>();
 
 var app = builder.Build();
 
-// Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "MedicalScheduling API V1"));
 }
-
 #region PACIENTES
-// GET Patient
-app.MapGet("/Patient", (PatientService service) =>
-{
-    return Results.Ok(service.GetAll());
-}).WithTags("Patient");
+// GET all
+app.MapGet("/Patient", async (PatientService service) =>
+    Results.Ok(await service.GetAll())
+).WithTags("Patient");
 
-// GET Patient by ID
-app.MapGet("/Patient/{id}", (int id, PatientService service) =>
+// GET by ID
+app.MapGet("/Patient/{id}", async (PatientService service, int id) =>
 {
-    var patient = service.GetById(id);
+    var patient = await service.GetById(id);
     return patient is not null ? Results.Ok(patient) : Results.NotFound();
 }).WithTags("Patient");
 
-// POST Patient
-app.MapPost("/Patient", (PatientService service, Patient patient) =>
+// POST
+app.MapPost("/Patient", async (PatientService service, PatientDTO dto) =>
 {
-    var added = service.AddPatient(patient);
-    return Results.Created($"/patient/{added.Id}", added);
+    var patient = new Patient { Name = dto.Name, Email = dto.Email };
+    var added = await service.Add(patient);
+    return Results.Created($"/Patient/{added.Id}", added);
 }).WithTags("Patient");
 
-// UPDATE Patient
-app.MapPut("/Patient/{id}", (int id, Patient patient, PatientService service) =>
+// PUT
+app.MapPut("/Patient/{id}", async (int id, PatientUpdateDto dto, ApplicationDbContext db) =>
 {
-    patient.Id = id;
-    return service.UpdatePatient(id, patient) ? Results.NoContent() : Results.NotFound();
+    var patientExist = await db.Patients.FindAsync(id);
+    if (patientExist is null) return Results.NotFound();
+
+    patientExist.Name = dto.Name;
+    patientExist.Email = dto.Email;
+
+    await db.SaveChangesAsync();
+    return Results.NoContent();
 }).WithTags("Patient");
 
-// DELETE Patient
-app.MapDelete("/Patient/{id}", (int id, PatientService service) =>
-{
-    return service.DeletePatient(id) ? Results.NoContent() : Results.NotFound();
-}).WithTags("Patient");
+// DELETE
+app.MapDelete("/Patient/{id}", async (PatientService service, int id) =>
+    await service.Delete(id) ? Results.NoContent() : Results.NotFound()
+).WithTags("Patient");
 #endregion
 
 #region DOCTORES
-// GET Doctor
-app.MapGet("/Doctor", (DoctorService service) =>
-{
-    return Results.Ok(service.GetAll());
-}).WithTags("Doctor");
+// GET all
+app.MapGet("/Doctor", async (DoctorService service) =>
+    Results.Ok(await service.GetAll())
+).WithTags("Doctor");
 
-// GET Doctor by ID
-app.MapGet("/Doctor/{id}", (int id, DoctorService service) =>
+// GET by ID
+app.MapGet("/Doctor/{id}", async (DoctorService service, int id) =>
 {
-    var doctor = service.GetById(id);
+    var doctor = await service.GetById(id);
     return doctor is not null ? Results.Ok(doctor) : Results.NotFound();
 }).WithTags("Doctor");
 
-// POST Doctor
-app.MapPost("/Doctor", (DoctorService service, Doctor doctor) =>
+// POST
+app.MapPost("/Doctor", async (DoctorService service, DoctorCreateDto dto) =>
 {
-    var added = service.AddDoctor(doctor);
-    return Results.Created($"/doctor/{added.Id}", added);
+    var doctor = new Doctor { Name = dto.Name, Specialty = dto.Specialty };
+    var added = await service.Add(doctor);
+    return Results.Created($"/Doctor/{added.Id}", added);
 }).WithTags("Doctor");
 
-// UPDATE Doctor
-app.MapPut("/Doctor/{id}", (int id, Doctor doctor, DoctorService service) =>
+// PUT
+app.MapPut("/Doctor/{id}", async (int id, DoctorUpdateDto dto, ApplicationDbContext db) =>
 {
-    doctor.Id = id;
-    return service.UpdateDoctor(id, doctor) ? Results.NoContent() : Results.NotFound();
+    var doctorExist = await db.Doctors.FindAsync(id);
+    if (doctorExist is null) return Results.NotFound();
+
+    doctorExist.Name = dto.Name;
+    doctorExist.Specialty = dto.Specialty;
+
+    await db.SaveChangesAsync();
+    return Results.NoContent();
 }).WithTags("Doctor");
 
-// DELETE Doctor
-app.MapDelete("/Doctor/{id}", (int id, DoctorService service) =>
-{
-    return service.DeleteDoctor(id) ? Results.NoContent() : Results.NotFound();
-}).WithTags("Doctor");
+// DELETE
+app.MapDelete("/Doctor/{id}", async (DoctorService service, int id) =>
+    await service.Delete(id) ? Results.NoContent() : Results.NotFound()
+).WithTags("Doctor");
 #endregion
 
 app.Run();
