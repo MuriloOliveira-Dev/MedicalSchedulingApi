@@ -1,41 +1,47 @@
 ﻿using MedicalScheduling.Domain.Entities;
+using MedicalScheduling.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace MedicalScheduling.Application.Services
 {
     public class PatientService
     {
-        private readonly List<Patient> _patients = new()
+        private readonly ApplicationDbContext _context;
+        public PatientService(ApplicationDbContext context)
         {
-            new Patient{Id = 1, Name = "Alex", Email = "alex@gmail.com" },
-        };
-        private int _nextId = 3;
-        public IEnumerable<Patient> GetAll() => _patients;
-        public Patient? GetById(int id) => _patients.FirstOrDefault(p => p.Id == id);
-
-        public Patient AddPatient(Patient patient)
+            _context = context;
+        }
+        public async Task<List<Patient>> GetAll()
         {
-            patient.Id = _nextId++;
-            _patients.Add(patient);
+            return await _context.Patients.ToListAsync();
+        }
+        public async Task<Patient> GetById(int id)
+        {
+            return await _context.Patients.FindAsync(id);
+        }
+        public async Task<Patient> Add(Patient patient)
+        {
+            _context.Patients.Add(patient);
+            await _context.SaveChangesAsync();
             return patient;
         }
-        public bool UpdatePatient(int id, Patient patient)
+        public async Task<bool> Update(int id, Patient patient)
         {
-            var patientExist = _patients.FirstOrDefault(p => p.Id == id);
-            if (patientExist == null)
-                return false;
-
+            var patientExist = await _context.Patients.FindAsync(id);
+            if (patientExist == null) return false;
             patientExist.Name = patient.Name;
             patientExist.Email = patient.Email;
             return true;
         }
-        public bool DeletePatient(int id)
+        public async Task<bool> Delete(int id)
         {
-            var patientExist = _patients.FirstOrDefault(p => p.Id == id);
-            if (patientExist == null)
-                return false;
-            _patients.Remove(patientExist);
+            var patientExist = await _context.Patients.FindAsync(id);
+            if (patientExist == null) return false;
+            _context.Patients.Remove(patientExist);
+            await _context.SaveChangesAsync();
             return true;
         }
+
     }
 
 }

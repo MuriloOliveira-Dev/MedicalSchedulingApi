@@ -3,6 +3,9 @@
   <ItemGroup>
     <ProjectReference Include="..\MedicalScheduling.Domain\MedicalScheduling.Domain.csproj" />
   </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\MedicalScheduling.Infrastructure\MedicalScheduling.Infrastructure.csproj" />
+	</ItemGroup>
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>

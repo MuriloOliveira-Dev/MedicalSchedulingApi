@@ -1,35 +1,44 @@
 ﻿using MedicalScheduling.Domain.Entities;
+using MedicalScheduling.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace MedicalScheduling.Application.Services
 {
     public class DoctorService
     {
-        private readonly List<Doctor> _doctors = new()
+        private readonly ApplicationDbContext _context;
+        public DoctorService(ApplicationDbContext context)
         {
-            new Doctor{Id = 1, Name = "Dr. Rogério", Specialty = "Cardiologista"}
-        };
-        private int nextId = 2;
-        public IEnumerable<Doctor> GetAll() => _doctors;
-        public Doctor? GetById(int id) => _doctors.FirstOrDefault(p => p.Id == id);
-        public Doctor AddDoctor(Doctor doctor)
+            _context = context;
+        }
+        public async Task<List<Doctor>> GetAll()
         {
-            doctor.Id = nextId++;
-            _doctors.Add(doctor);
+            return await _context.Doctors.ToListAsync();
+        }
+        public async Task<Doctor?> GetById(int id)
+        {
+            return await _context.Doctors.FindAsync(id);
+        }
+        public async Task<Doctor> Add(Doctor doctor)
+        {
+            _context.Doctors.Add(doctor);
+            await _context.SaveChangesAsync();
             return doctor;
         }
-        public bool UpdateDoctor(int id, Doctor doctor)
+        public async Task<bool> Update(int id, Doctor doctor)
         {
-            var doctorExist = _doctors.FirstOrDefault(p => p.Id == id);
-            if (doctorExist == null)
-                return false;
+            var docExist = await _context.Doctors.FindAsync(id);
+            if (docExist == null) return false;
+            docExist.Name = doctor.Name;
+            docExist.Specialty = doctor.Specialty;
             return true;
         }
-        public bool DeleteDoctor(int id)
+        public async Task<bool> Delete(int id)
         {
-            var doctorExist = _doctors.FirstOrDefault(p => p.Id == id);
-            if(doctorExist == null)
-                return false;
-            _doctors.Remove(doctorExist);
+            var docExist = await _context.Doctors.FindAsync(id);
+            if (docExist == null) return false;
+            _context.Doctors.Remove(docExist);
+            await _context.SaveChangesAsync();
             return true;
         }
     }
