@@ -11,9 +11,9 @@ Projeto criado para **portfólio**, com endpoints documentados via **Swagger** e
 - ASP.NET Core 8 (Minimal API)  
 - Swagger / OpenAPI  
 - Clean Architecture + DDD  
-- In-memory repository (dados armazenados em listas, futuro suporte a banco de dados)  
+- Entity Framework Core com PostgreSQL  
+- DTOs para entrada de dados  
 - C#  
-
 ---
 
 ## 🏗️ Estrutura do Projeto
@@ -23,7 +23,7 @@ O sistema segue uma arquitetura em **quatro camadas**, garantindo separação de
 - **Api** → Endpoints REST (Minimal API, Swagger)  
 - **Application** → Serviços, DTOs e lógica de negócio desacoplada da infraestrutura  
 - **Domain** → Entidades centrais (`Patient`, `Doctor`) e regras essenciais do negócio  
-- **Infrastructure** → Repositórios em memória (futuro suporte a banco de dados via EF Core)  
+- **Infrastructure** → Persistência de dados via **Entity Framework Core** (PostgreSQL) e repositórios
 
 ---
 
