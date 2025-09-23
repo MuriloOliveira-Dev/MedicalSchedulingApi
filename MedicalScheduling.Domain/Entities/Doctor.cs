@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MedicalScheduling.Application.Services
+namespace MedicalScheduling.Domain.Entities
 {
     public class Doctor
     {

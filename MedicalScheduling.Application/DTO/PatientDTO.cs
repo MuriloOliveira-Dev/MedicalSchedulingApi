@@ -1,9 +1,17 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
+
 namespace MedicalScheduling.Application.DTO
 {
     public class PatientDTO
     {
+        [Required]
+        [MaxLength(100)]
         public string Name { get; set; }
+
+        [Required]
+        [EmailAddress]
+        [MaxLength(150)]
         public string Email { get; set; }
 
     }

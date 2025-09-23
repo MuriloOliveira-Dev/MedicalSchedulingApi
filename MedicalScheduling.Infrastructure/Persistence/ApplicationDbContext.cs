@@ -1,5 +1,4 @@
-﻿using MedicalScheduling.Application.Services;
-using MedicalScheduling.Domain.Entities;
+﻿using MedicalScheduling.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

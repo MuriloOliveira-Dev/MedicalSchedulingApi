@@ -1,4 +1,5 @@
 ﻿using MedicalScheduling.Domain.Entities;
+using MedicalScheduling.Domain.Repositories;
 using MedicalScheduling.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,40 +7,22 @@ namespace MedicalScheduling.Application.Services
 {
     public class DoctorService
     {
-        private readonly ApplicationDbContext _context;
-        public DoctorService(ApplicationDbContext context)
+        private readonly IDoctorRepository _repo;
+        public DoctorService(IDoctorRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
-        public async Task<List<Doctor>> GetAll()
+        public Task<List<Doctor>> GetAll() => _repo.GetAll();
+        public Task<Doctor?> GetById(int id) => _repo.GetById(id);
+        public Task<Doctor> Add(Doctor doctor) => _repo.Add(doctor);
+        public Task<bool> Update(Doctor doctor, int id)
         {
-            return await _context.Doctors.ToListAsync();
+            doctor.Id = id;
+            return _repo.Update(doctor);
         }
-        public async Task<Doctor?> GetById(int id)
+        public Task<bool> Delete(int id)
         {
-            return await _context.Doctors.FindAsync(id);
-        }
-        public async Task<Doctor> Add(Doctor doctor)
-        {
-            _context.Doctors.Add(doctor);
-            int v = await _context.SaveChangesAsync();
-            return doctor;
-        }
-        public async Task<bool> Update(int id, Doctor doctor)
-        {
-            var docExist = await _context.Doctors.FindAsync(id);
-            if (docExist == null) return false;
-            docExist.Name = doctor.Name;
-            docExist.Specialty = doctor.Specialty;
-            return true;
-        }
-        public async Task<bool> Delete(int id)
-        {
-            var docExist = await _context.Doctors.FindAsync(id);
-            if (docExist == null) return false;
-            _context.Doctors.Remove(docExist);
-            await _context.SaveChangesAsync();
-            return true;
+            return _repo.Delete(id);
         }
     }
 }

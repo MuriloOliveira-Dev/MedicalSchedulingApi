@@ -1,4 +1,5 @@
 ﻿using MedicalScheduling.Domain.Entities;
+using MedicalScheduling.Domain.Repositories;
 using MedicalScheduling.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,40 +7,22 @@ namespace MedicalScheduling.Application.Services
 {
     public class PatientService
     {
-        private readonly ApplicationDbContext _context;
-        public PatientService(ApplicationDbContext context)
+        private readonly IPatientRepository _repo;
+        public PatientService(IPatientRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
-        public async Task<List<Patient>> GetAll()
+        public Task<List<Patient>> GetAll() => _repo.GetAll();
+        public Task<Patient?> GetById(int id) => _repo.GetById(id);
+        public Task<Patient> Add(Patient patient) => _repo.Add(patient);
+        public Task<bool> Update(Patient patient, int id)
         {
-            return await _context.Patients.ToListAsync();
+            patient.Id = id;
+            return _repo.Update(patient);
         }
-        public async Task<Patient> GetById(int id)
+        public Task<bool> Delete(int id)
         {
-            return await _context.Patients.FindAsync(id);
-        }
-        public async Task<Patient> Add(Patient patient)
-        {
-            _context.Patients.Add(patient);
-            await _context.SaveChangesAsync();
-            return patient;
-        }
-        public async Task<bool> Update(int id, Patient patient)
-        {
-            var patientExist = await _context.Patients.FindAsync(id);
-            if (patientExist == null) return false;
-            patientExist.Name = patient.Name;
-            patientExist.Email = patient.Email;
-            return true;
-        }
-        public async Task<bool> Delete(int id)
-        {
-            var patientExist = await _context.Patients.FindAsync(id);
-            if (patientExist == null) return false;
-            _context.Patients.Remove(patientExist);
-            await _context.SaveChangesAsync();
-            return true;
+            return _repo.Delete(id);
         }
 
     }

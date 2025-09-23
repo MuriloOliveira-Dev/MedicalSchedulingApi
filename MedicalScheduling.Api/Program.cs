@@ -1,20 +1,29 @@
+using MedicalScheduling.Application.DTO;
 using MedicalScheduling.Application.Services;
 using MedicalScheduling.Domain.Entities;
+using MedicalScheduling.Domain.Repositories;
 using MedicalScheduling.Infrastructure.Persistence;
+using MedicalScheduling.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using MedicalScheduling.Application.DTO;
+using System.ComponentModel.DataAnnotations;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// DbContext (Postgres)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "MedicalScheduling API", Version = "v1" });
 });
+
+// DI: services and repositories
+builder.Services.AddScoped<IPatientRepository, EfPatientRepository>();
+builder.Services.AddScoped<IDoctorRepository, EfDoctorRepository>();
 
 builder.Services.AddScoped<PatientService>();
 builder.Services.AddScoped<DoctorService>();
@@ -24,87 +33,91 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(c =>
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "MedicalScheduling API V1"));
+    app.UseSwaggerUI();
 }
-#region PACIENTES
-// GET all
-app.MapGet("/Patient", async (PatientService service) =>
-    Results.Ok(await service.GetAll())
+
+app.UseHttpsRedirection();
+
+// Helper: validate DTOs using DataAnnotations
+static bool ValidateDto<T>(T dto, out List<string> errors)
+{
+    var context = new ValidationContext(dto, serviceProvider: null, items: null);
+    var results = new List<ValidationResult>();
+    var isValid = Validator.TryValidateObject(dto, context, results, validateAllProperties: true);
+    errors = results.Select(r => r.ErrorMessage ?? "Validation error").ToList();
+    return isValid;
+}
+
+#region PATIENT
+app.MapGet("/Patient", async (PatientService svc) =>
+    Results.Ok(await svc.GetAll())
 ).WithTags("Patient");
 
-// GET by ID
-app.MapGet("/Patient/{id}", async (PatientService service, int id) =>
+app.MapGet("/Patient/{id}", async (int id, PatientService svc) =>
 {
-    var patient = await service.GetById(id);
-    return patient is not null ? Results.Ok(patient) : Results.NotFound();
+    var p = await svc.GetById(id);
+    return p is not null ? Results.Ok(p) : Results.NotFound();
 }).WithTags("Patient");
 
-// POST
-app.MapPost("/Patient", async (PatientService service, PatientDTO dto) =>
+app.MapPost("/Patient", async (PatientCreateDto dto, PatientService svc) =>
 {
+    if (!ValidateDto(dto, out var errors)) return Results.BadRequest(new { errors });
+
     var patient = new Patient { Name = dto.Name, Email = dto.Email };
-    var added = await service.Add(patient);
+    var added = await svc.Add(patient);
     return Results.Created($"/Patient/{added.Id}", added);
 }).WithTags("Patient");
 
-// PUT
-app.MapPut("/Patient/{id}", async (int id, PatientUpdateDto dto, ApplicationDbContext db) =>
+app.MapPut("/Patient/{id}", async (int id, PatientCreateDto dto, PatientService svc) =>
 {
-    var patientExist = await db.Patients.FindAsync(id);
-    if (patientExist is null) return Results.NotFound();
+    if (!ValidateDto(dto, out var errors)) return Results.BadRequest(new { errors });
 
-    patientExist.Name = dto.Name;
-    patientExist.Email = dto.Email;
-
-    await db.SaveChangesAsync();
-    return Results.NoContent();
+    var patient = new Patient { Name = dto.Name, Email = dto.Email };
+    var updated = await svc.Update(patient, id);
+    return updated ? Results.NoContent() : Results.NotFound();
 }).WithTags("Patient");
 
-// DELETE
-app.MapDelete("/Patient/{id}", async (PatientService service, int id) =>
-    await service.Delete(id) ? Results.NoContent() : Results.NotFound()
-).WithTags("Patient");
+app.MapDelete("/Patient/{id}", async (int id, PatientService svc) =>
+{
+    var deleted = await svc.Delete(id);
+    return deleted ? Results.NoContent() : Results.NotFound();
+}).WithTags("Patient");
 #endregion
 
-#region DOCTORES
-// GET all
-app.MapGet("/Doctor", async (DoctorService service) =>
-    Results.Ok(await service.GetAll())
+#region DOCTOR
+app.MapGet("/Doctor", async (DoctorService svc) =>
+    Results.Ok(await svc.GetAll())
 ).WithTags("Doctor");
 
-// GET by ID
-app.MapGet("/Doctor/{id}", async (DoctorService service, int id) =>
+app.MapGet("/Doctor/{id}", async (int id, DoctorService svc) =>
 {
-    var doctor = await service.GetById(id);
-    return doctor is not null ? Results.Ok(doctor) : Results.NotFound();
+    var d = await svc.GetById(id);
+    return d is not null ? Results.Ok(d) : Results.NotFound();
 }).WithTags("Doctor");
 
-// POST
-app.MapPost("/Doctor", async (DoctorService service, DoctorCreateDto dto) =>
+app.MapPost("/Doctor", async (DoctorCreateDto dto, DoctorService svc) =>
 {
+    if (!ValidateDto(dto, out var errors)) return Results.BadRequest(new { errors });
+
     var doctor = new Doctor { Name = dto.Name, Specialty = dto.Specialty };
-    var added = await service.Add(doctor);
+    var added = await svc.Add(doctor);
     return Results.Created($"/Doctor/{added.Id}", added);
 }).WithTags("Doctor");
 
-// PUT
-app.MapPut("/Doctor/{id}", async (int id, DoctorUpdateDto dto, ApplicationDbContext db) =>
+app.MapPut("/Doctor/{id}", async (int id, DoctorCreateDto dto, DoctorService svc) =>
 {
-    var doctorExist = await db.Doctors.FindAsync(id);
-    if (doctorExist is null) return Results.NotFound();
+    if (!ValidateDto(dto, out var errors)) return Results.BadRequest(new { errors });
 
-    doctorExist.Name = dto.Name;
-    doctorExist.Specialty = dto.Specialty;
-
-    await db.SaveChangesAsync();
-    return Results.NoContent();
+    var doctor = new Doctor { Name = dto.Name, Specialty = dto.Specialty };
+    var updated = await svc.Update(doctor, id);
+    return updated ? Results.NoContent() : Results.NotFound();
 }).WithTags("Doctor");
 
-// DELETE
-app.MapDelete("/Doctor/{id}", async (DoctorService service, int id) =>
-    await service.Delete(id) ? Results.NoContent() : Results.NotFound()
-).WithTags("Doctor");
+app.MapDelete("/Doctor/{id}", async (int id, DoctorService svc) =>
+{
+    var deleted = await svc.Delete(id);
+    return deleted ? Results.NoContent() : Results.NotFound();
+}).WithTags("Doctor");
 #endregion
 
 app.Run();
