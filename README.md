@@ -11,9 +11,9 @@ Projeto criado para **portfólio**, com endpoints documentados via **Swagger** e
 - ASP.NET Core 8 (Minimal API)  
 - Swagger / OpenAPI  
 - Clean Architecture + DDD  
-- In-memory repository (dados armazenados em listas)  
+- Entity Framework Core com PostgreSQL  
+- DTOs para entrada de dados  
 - C#  
-
 ---
 
 ## 🏗️ Estrutura do Projeto
@@ -23,34 +23,46 @@ O sistema segue uma arquitetura em **quatro camadas**, garantindo separação de
 - **Api** → Endpoints REST (Minimal API, Swagger)  
 - **Application** → Serviços, DTOs e lógica de negócio desacoplada da infraestrutura  
 - **Domain** → Entidades centrais (`Patient`, `Doctor`) e regras essenciais do negócio  
-- **Infrastructure** → Repositórios em memória (futuro suporte a banco de dados via EF Core)  
+- **Infrastructure** → Persistência de dados via **Entity Framework Core** (PostgreSQL) e repositórios
 
 ---
 
-- ## ⚡ Endpoints disponíveis (Doctor)
-- `GET /Doctor` → Lista todos os médicos
-- `GET /Doctor/{id}` → Busca médico por ID
-- `POST /Doctor` → Cria um novo médico
-- `PUT /Doctor/{id}` → Atualiza dados de um médico
-- `DELETE /Doctor/{id}` → Remove médico
+## ✨ Novidades / Refactor
 
-## 📖 Exemplo de JSON (POST /Doutor)
+- Endpoints de **Patient** e **Doctor** agora utilizam **DTOs** para entrada de dados.  
+- O campo `Id` **não é mais enviado no body** de POST ou PUT; é gerado pelo sistema ou passado na URL.  
+- Swagger atualizado para refletir apenas os campos editáveis nos bodies (`Name`, `Email`, `Specialty`).  
+- PUT agora só recebe `Id` pela URL e os dados editáveis no body.
+
+> ⚠️ Nota: Para atualização (PUT), o `Id` deve ser passado **na URL**, e o body só contém os campos `Name` e `Email` / `Specialty`.
+
+---
+
+## ⚡ Endpoints disponíveis (Doctor)
+- `GET /Doctor` → Lista todos os médicos  
+- `GET /Doctor/{id}` → Busca médico por ID  
+- `POST /Doctor` → Cria um novo médico  
+- `PUT /Doctor/{id}` → Atualiza dados de um médico  
+- `DELETE /Doctor/{id}` → Remove médico  
+
+## 📖 Exemplo de JSON (POST /Doctor)
 ```json
 {
   "name": "Dra. Claudia Silva",
-  "Specialty": "Cardiologia"
+  "specialty": "Cardiologia"
 }
 ````
-- ## ⚡ Endpoints disponíveis (Patient)
-- `GET /Patient` → Lista todos os pacientes
-- `GET /Patient/{id}` → Busca paciente por ID
-- `POST /Patient` → Cria um novo paciente
-- `PUT /Patient/{id}` → Atualiza dados de um paciente
-- `DELETE /Patient/{id}` → Remove paciente
+---
+## ⚡ Endpoints disponíveis (Patient)
+- `GET /Patient` → Lista todos os pacientes  
+- `GET /Patient/{id}` → Busca paciente por ID  
+- `POST /Patient` → Cria um novo paciente  
+- `PUT /Patient/{id}` → Atualiza dados de um paciente  
+- `DELETE /Patient/{id}` → Remove paciente  
 
-## 📖 Exemplo de JSON (POST /Patient)
+## 📖 Exemplo de JSON (POST /Doctor)
 ```json
 {
-  "name": "João da Silva",
-  "email": "joao@gmail.com"
+  "name": "Murilo Oliveira",
+  "email": "dev.murilooliveira@gmail.com"
 }
