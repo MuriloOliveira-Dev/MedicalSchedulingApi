@@ -30,6 +30,7 @@ namespace MedicalScheduling.Infrastructure.Persistence.Repositories
 
             patientExist.Name = patient.Name;
             patientExist.Email = patient.Email;
+            patientExist.Birthdate = patient.Birthdate;
 
             await _context.SaveChangesAsync();
             return true;

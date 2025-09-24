@@ -59,13 +59,10 @@ app.MapGet("/Patient/{id}", async (int id, PatientService svc) =>
     return p is not null ? Results.Ok(p) : Results.NotFound();
 }).WithTags("Patient");
 
-app.MapPost("/Patient", async (PatientCreateDto dto, PatientService svc) =>
+app.MapPost("/Patient", async (PatientService service, PatientCreateDto dto) =>
 {
-    if (!ValidateDto(dto, out var errors)) return Results.BadRequest(new { errors });
-
-    var patient = new Patient { Name = dto.Name, Email = dto.Email };
-    var added = await svc.Add(patient);
-    return Results.Created($"/Patient/{added.Id}", added);
+    var added = await service.Add(dto);
+    return Results.Created($"/patient/{added.Id}", added);
 }).WithTags("Patient");
 
 app.MapPut("/Patient/{id}", async (int id, PatientCreateDto dto, PatientService svc) =>
