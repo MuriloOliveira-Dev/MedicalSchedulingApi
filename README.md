@@ -64,5 +64,11 @@ O sistema segue uma arquitetura em **quatro camadas**, garantindo separação de
 ```json
 {
   "name": "Murilo Oliveira",
-  "email": "dev.murilooliveira@gmail.com"
+  "email": "dev.murilooliveira@gmail.com",
+  "birthdate": "1995-11-12"
 }
+````
+##💡 Observações
+- O campo BirthDate usa DateOnly no backend, garantindo que apenas a data seja armazenada.
+- Swagger já está configurado para documentação e testes de endpoints.
+- Projeto pronto para integração com PostgreSQL, mas ainda será expandido com novas entidades (ex.: consultas, agendamentos).
