@@ -68,6 +68,7 @@ O sistema segue uma arquitetura em **quatro camadas**, garantindo separação de
   "birthdate": "1995-11-12"
 }
 ````
+---
 ##💡 Observações
 - O campo BirthDate usa DateOnly no backend, garantindo que apenas a data seja armazenada.
 - Swagger já está configurado para documentação e testes de endpoints.
